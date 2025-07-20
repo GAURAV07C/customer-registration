@@ -57,10 +57,52 @@ const RegistrationForm = () => {
         console.log('Form submitted with data:', data)
     }
     const getLocation = () => {
+        setIsGettingLocation(true);
+
+        if (!navigator.geolocation) {
+            toast.error('Geolocation not supported', {
+                description: 'Your browser does not support geolocation'
+            });
+            setIsGettingLocation(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                form.setValue('latitude', position.coords.latitude.toFixed(6));
+                form.setValue('longitude', position.coords.longitude.toFixed(6));
+                setIsGettingLocation(false);
+                toast.success('Location captured successfully!');
+            },
+            (error) => {
+                setIsGettingLocation(false);
+                let errorMessage = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location access denied. Please enable location permissions.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information is unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Location request timed out.';
+                        break;
+                    default:
+                        errorMessage = 'An unknown error occurred while retrieving location.';
+                        break;
+                }
+                toast.error('Failed to get location', { description: errorMessage });
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
 
     }
 
-      const handleAutoFill = () => {}
+    const handleAutoFill = () => { }
 
 
 
