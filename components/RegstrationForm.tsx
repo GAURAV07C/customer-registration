@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useTransition} from 'react';
 import { User, Mail, Phone, MapPin, Lock, Eye, EyeOff, Calendar, Home, Check, Loader2, UserCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,12 +54,29 @@ const RegistrationForm = () => {
     const watchedLatitude = form.watch('latitude');
     const watchedLongitude = form.watch('longitude');
 
-    const onSubmit = async (data: RegistrationFormData) => {
+
+    const [isPending, startTransition] = useTransition();
+
+    const onSubmit =  (data: RegistrationFormData) => {
         setIsSubmitting(true);
         try {
             console.log(data , "data")
+            startTransition(() => {
 
-            const response = await submitRegistration(data);
+                setIsCheckingPhone(true);
+                setPhoneStatus('checking')
+
+            
+
+            const responses = submitRegistration(data);
+
+            responses.then((response)=> {
+                
+            
+
+
+
+
             console.log("res",response)
             if (response.success) {
                 toast.success('Registration successful!', {
@@ -68,9 +85,13 @@ const RegistrationForm = () => {
             }
 
             // Reset form
+            
             form.reset();
             setPhoneStatus('idle');
             setExistingCustomer(null);
+        })
+
+    })
 
         } catch (error) {
             if (error instanceof Error) {

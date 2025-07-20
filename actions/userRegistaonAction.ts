@@ -1,3 +1,4 @@
+'use server';
 import prisma from "@/lib/prisma"
 
 import { RegistrationFormData, registrationSchema } from "@/validation/uservalidation";
@@ -39,7 +40,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
         const createdUser = await prisma.user.create({
             data: {
                 name: name,
-                email: validatedData.email,
+                email: email,
                 phone_number: phone_number,
                 gender: gender,
                 dob: dob,
@@ -69,10 +70,11 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
                 errors: fieldErrors
             };
         }
+        console.error('error in ',error)
 
         return {
             success: false,
-            error: 'Server error'
+            error:'server error'
         };
     }
 };
