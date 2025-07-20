@@ -1,10 +1,11 @@
+import RegistrationForm from "@/components/RegstrationForm";
+
 export default function Home() {
   return (
     <div>
   
-hii
-
-    </div>
+<RegistrationForm />
+      </div>
   )
 }
 
