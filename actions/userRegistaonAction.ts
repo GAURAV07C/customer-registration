@@ -9,7 +9,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
     try {
         const validatedData = registrationSchema.parse(formData);
 
-        const { fullName, email, password, phone, gender, dateOfBirth, latitude, longitude, address } = validatedData
+        const { name, email, password, phone_number, gender, dob, latitude, longitude, address } = validatedData
 
         // Check if email already exists
         const existingEmail = await prisma.user.findUnique({
@@ -25,7 +25,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
 
         // Check if phone already exists
         const existingPhone = await prisma.user.findFirst({
-            where: { phone_number: phone }
+            where: { phone_number: phone_number}
         });
         if (existingPhone) {
             return {
@@ -38,11 +38,11 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
         // Save to real database
         const createdUser = await prisma.user.create({
             data: {
-                name: fullName,
+                name: name,
                 email: validatedData.email,
-                phone_number: phone,
+                phone_number: phone_number,
                 gender: gender,
-                dob: dateOfBirth,
+                dob: dob,
                 address: address,
                 password: password, 
                 latitude: latitude ?? "",
@@ -52,7 +52,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
 
         return {
             success: true,
-            data: { id: createdUser.id }
+            data: { createdUser }
         };
     } catch (error) {
         if (error instanceof z.ZodError) {

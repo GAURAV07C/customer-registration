@@ -7,7 +7,7 @@ const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]
 const phoneRegex = /^\d{10}$/;
 
 export const registrationSchema = z.object({
-  fullName: z
+  name: z
     .string()
     .min(2, 'Full name must be at least 2 characters')
     .max(100, 'Full name must not exceed 100 characters')
@@ -19,7 +19,7 @@ export const registrationSchema = z.object({
     .regex(emailRegex, 'Please enter a valid email address')
     .max(254, 'Email must not exceed 254 characters'),
 
-  phone: z
+  phone_number: z
     .string()
     .regex(phoneRegex, 'Phone number must be exactly 10 digits')
     .transform(val => val.replace(/\D/g, '')), // Remove non-digits
@@ -28,7 +28,7 @@ export const registrationSchema = z.object({
     message: "Invalid gender selected"
   }),
 
-  dateOfBirth: z
+  dob: z
     .string()
     .min(1, 'Date of birth is required')
     .refine((date) => {
