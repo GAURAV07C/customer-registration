@@ -70,7 +70,8 @@ const RegistrationForm = () => {
 
             const responses = submitRegistration(data);
 
-            responses.then((response)=> {
+            responses
+            .then((response)=> {
                 
             
 
@@ -85,10 +86,16 @@ const RegistrationForm = () => {
             }
 
             // Reset form
-            
+
             form.reset();
             setPhoneStatus('idle');
             setExistingCustomer(null);
+        })
+        .catch(error => {
+            console.error('Registration error :', error)
+            toast.error('Registration failed ', {
+                description : error instanceof Error ? error.message : 'An unexpected error'
+            })
         })
 
     })
