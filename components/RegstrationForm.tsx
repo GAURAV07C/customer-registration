@@ -56,6 +56,7 @@ const RegistrationForm = () => {
     const onSubmit = async (data: RegistrationFormData) => {
         console.log('Form submitted with data:', data)
     }
+    
     const getLocation = () => {
         setIsGettingLocation(true);
 

@@ -5,33 +5,31 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-      url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum gender_status {
-male
-female
-other
-
+  male
+  female
+  other
 }
 
 model User {
-      id              String            @id @default(cuid())
-        name            String
-          email           String           @unique
-          phone_number String 
-          gender gender_status
-          dob DateTime
-          address String
-                password        String
-                latitude String
-                longitude String
-
-                  createdAt       DateTime          @default(now())
-                  updateAt DateTime @updatedAt
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  phone_number String
+  gender       gender_status
+  dob          DateTime
+  address      String
+  password     String
+  latitude     String
+  longitude    String
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 }

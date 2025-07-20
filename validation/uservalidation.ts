@@ -24,10 +24,9 @@ export const registrationSchema = z.object({
     .regex(phoneRegex, 'Phone number must be exactly 10 digits')
     .transform(val => val.replace(/\D/g, '')), // Remove non-digits
 
-  gender: z.string()
-.refine(val => ['male', 'female', 'other'].includes(val), {
-    message: 'Invalid gender selected',
-      }),
+  gender: z.enum(["male", "female", "other"], {
+    message: "Invalid gender selected"
+  }),
 
   dateOfBirth: z
     .string()
