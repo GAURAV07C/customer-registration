@@ -74,7 +74,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
 
         return {
             success: false,
-            error:'server error'
+            error: error instanceof Error ? error.message : 'An unexpected error '
         };
     }
 };
