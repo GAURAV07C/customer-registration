@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect , useTransition} from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { User, Mail, Phone, MapPin, Lock, Eye, EyeOff, Calendar, Home, Check, Loader2, UserCheck } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import PasswordStrengthMeter from '@/components/PasswordStrengthMeter';
-import { submitRegistration } from '@/actions/userRegistaonAction';
+import { submitRegistration ,getCustomerByPhone } from '@/actions/userRegistaonAction';
 
 const RegistrationForm = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -57,101 +57,141 @@ const RegistrationForm = () => {
 
     const [isPending, startTransition] = useTransition();
 
-    const onSubmit =  (data: RegistrationFormData) => {
+    const onSubmit = (data: RegistrationFormData) => {
         setIsSubmitting(true);
         try {
-            console.log(data , "data")
+            console.log(data, "data")
             startTransition(() => {
 
                 setIsCheckingPhone(true);
                 setPhoneStatus('checking')
 
-            
 
-            const responses = submitRegistration(data);
 
-            responses
-            .then((response)=> {
-            console.log("res",response)
-            if (response.success) {
-                toast.success('Registration successful!', {
-                    description: 'Customer has been registered successfully.'
-                });
-            }
+                const responses = submitRegistration(data);
 
-            // Reset form
+                responses
+                    .then((response) => {
+                        console.log("res", response)
+                        if (response.success) {
+                            toast.success('Registration successful!', {
+                                description: 'Customer has been registered successfully.'
+                            });
+                        }
 
-            form.reset();
-            setPhoneStatus('idle');
-            setExistingCustomer(null);
-        })
-        .catch(error => {
-            console.error('Registration error :', error)
-            toast.error('Registration failed ', {
-                description : error instanceof Error ? error.message : 'An unexpected error'
+                        // Reset form
+
+                        form.reset();
+                        setPhoneStatus('idle');
+                        setExistingCustomer(null);
+                    })
+                    .catch(error => {
+                        console.error('Registration error :', error)
+                        toast.error('Registration failed ', {
+                            description: error instanceof Error ? error.message : 'An unexpected error'
+                        })
+                    })
+
             })
-        })
-
-    })
 
         } catch (error) {
             if (error instanceof Error) {
                 toast.error('Registration failed', {
-                    description : error.message
+                    description: error.message
                 })
             }
 
-            console.error('Registration error : ,',error)
-    } finally {
-        setIsSubmitting(false);
-    }
-}
-
-const getLocation = () => {
-    setIsGettingLocation(true);
-
-    if (!navigator.geolocation) {
-        toast.error('Geolocation not supported', {
-            description: 'Your browser does not support geolocation'
-        });
-        setIsGettingLocation(false);
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            form.setValue('latitude', position.coords.latitude.toFixed(6));
-            form.setValue('longitude', position.coords.longitude.toFixed(6));
-            setIsGettingLocation(false);
-            toast.success('Location captured successfully!');
-        },
-        (error) => {
-            setIsGettingLocation(false);
-            let errorMessage = '';
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    errorMessage = 'Location access denied. Please enable location permissions.';
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    errorMessage = 'Location information is unavailable.';
-                    break;
-                case error.TIMEOUT:
-                    errorMessage = 'Location request timed out.';
-                    break;
-                default:
-                    errorMessage = 'An unknown error occurred while retrieving location.';
-                    break;
-            }
-            toast.error('Failed to get location', { description: errorMessage });
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 60000
+            console.error('Registration error : ,', error)
+        } finally {
+            setIsSubmitting(false);
         }
-    );
+    }
 
-}
+    const getLocation = () => {
+        setIsGettingLocation(true);
+
+        if (!navigator.geolocation) {
+            toast.error('Geolocation not supported', {
+                description: 'Your browser does not support geolocation'
+            });
+            setIsGettingLocation(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                form.setValue('latitude', position.coords.latitude.toFixed(6));
+                form.setValue('longitude', position.coords.longitude.toFixed(6));
+                setIsGettingLocation(false);
+                toast.success('Location captured successfully!');
+            },
+            (error) => {
+                setIsGettingLocation(false);
+                let errorMessage = '';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Location access denied. Please enable location permissions.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Location information is unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Location request timed out.';
+                        break;
+                    default:
+                        errorMessage = 'An unknown error occurred while retrieving location.';
+                        break;
+                }
+                toast.error('Failed to get location', { description: errorMessage });
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+
+    }
+
+
+    useEffect(() => {
+        const checkPhone = async () => {
+            if (watchedPhone && watchedPhone.length === 10) {
+                setIsCheckingPhone(true);
+                setPhoneStatus('checking');
+
+                try {
+                    const response = await getCustomerByPhone(watchedPhone);
+                    if (response.success && response.data) {
+                        setExistingCustomer(response.data);
+                        setPhoneStatus('found');
+                        setShowConfirmDialog(true);
+                        toast.info(`Customer found: ${response.data.name}`, {
+                            description: 'Would you like to auto-fill the form with existing details?'
+                        });
+                    } else {
+                        setPhoneStatus('new');
+                        setExistingCustomer(null);
+                    }
+                } catch (error) {
+                    console.error('Phone check error:', error);
+                    setPhoneStatus('idle');
+                    toast.error('Failed to check phone number');
+                } finally {
+                    setIsCheckingPhone(false);
+                }
+            } else {
+                setPhoneStatus('idle');
+                setExistingCustomer(null);
+            }
+        };
+
+        checkPhone(); // 🔥 Run directly, no debounce
+    }, [watchedPhone]);
+
+
+
+
 
 const handleAutoFill = () => { }
 
@@ -501,7 +541,7 @@ return (
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    
+
                                     size="lg"
                                     className="w-full h-12 text-lg font-semibold"
                                 >
