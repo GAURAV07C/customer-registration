@@ -7,7 +7,7 @@ interface MapPreviewProps {
 }
 
 const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
-    const apiKey = "";
+    const apiKey = process.env.MAP_API;
     const mapUrl = apiKey
         ? `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${latitude},${longitude}&zoom=15`
         : null;
@@ -65,11 +65,7 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
                 </div>
             )}
 
-            {!apiKey && (
-                <p className="text-xs text-gray-500 mt-2">
-                    * Add your Google Maps API key to .env file as VITE_GOOGLE_MAPS_API_KEY to enable live map preview
-                </p>
-            )}
+        
         </div>
     );
 };
