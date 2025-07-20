@@ -187,7 +187,7 @@ const RegistrationForm = () => {
             }
         };
 
-        checkPhone(); // 🔥 Run directly, no debounce
+        checkPhone(); 
     }, [watchedPhone]);
 
 
@@ -201,6 +201,7 @@ const RegistrationForm = () => {
                 email: existingCustomer.email,
                 phone_number: existingCustomer.phone_number,
                 dob: existingCustomer.dob,
+                gender : existingCustomer.gender,
                 address: existingCustomer.address,
                 latitude: existingCustomer.latitude,
                 longitude: existingCustomer.longitude,
