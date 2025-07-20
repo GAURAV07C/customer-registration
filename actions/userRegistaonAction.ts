@@ -4,12 +4,12 @@ import { RegistrationFormData, registrationSchema } from "@/validation/uservalid
 
 import { z } from "zod"
 
- 
-export const submitRegistration = async (formData: RegistrationFormData)=> {
+
+export const submitRegistration = async (formData: RegistrationFormData) => {
     try {
         const validatedData = registrationSchema.parse(formData);
 
-        const {fullName, email, password,phone,gender,dateOfBirth,latitude,longitude,address} = validatedData
+        const { fullName, email, password, phone, gender, dateOfBirth, latitude, longitude, address } = validatedData
 
         // Check if email already exists
         const existingEmail = await prisma.user.findUnique({
@@ -40,9 +40,9 @@ export const submitRegistration = async (formData: RegistrationFormData)=> {
             data: {
                 name: fullName,
                 email: validatedData.email,
-                phone_number : phone,
-                gender : gender, 
-                dob :dateOfBirth,
+                phone_number: phone,
+                gender: gender,
+                dob: dateOfBirth,
                 address: address,
                 password: password, // Hash this in real app
                 latitude: latitude ?? "",
@@ -78,5 +78,44 @@ export const submitRegistration = async (formData: RegistrationFormData)=> {
 };
 
 
+export const checkEmailAvailability = async (email: string) => {
+    try {
+        const existing = await prisma.user.findUnique({ where: { email } });
+        return {
+            success: true,
+            data: { available: !existing }
+        };
+    } catch {
+        return {
+            success: false,
+            error: 'Server error'
+        };
+    }
+};
+
+export const getCustomerByPhone = async (phone: string) => {
+    try {
+            const user = await prisma.user.findFirst({
+                where: { phone_number: phone } 
+            });
+            if(!user) {
+                return { success: true, data: null };
+            }
+    
+            return {
+                success: true,
+                data: {
+                    ...user,
+                    password: '',
+                    confirmPassword: ''
+                }
+            };
+        } catch {
+            return {
+                success: false,
+                error: 'Server error'
+            };
+        }
+    }
 
 
