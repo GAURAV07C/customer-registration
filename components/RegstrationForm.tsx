@@ -35,7 +35,7 @@ const RegistrationForm = () => {
             fullName: '',
             email: '',
             phone: '',
-            gender: '',
+            gender: undefined as unknown as 'male' | 'female' | 'other',
             dateOfBirth: '',
             address: '',
             password: '',

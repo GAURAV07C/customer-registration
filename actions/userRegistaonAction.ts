@@ -44,7 +44,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
                 gender: gender,
                 dob: dateOfBirth,
                 address: address,
-                password: password, // Hash this in real app
+                password: password, 
                 latitude: latitude ?? "",
                 longitude: longitude ?? "",
             }
