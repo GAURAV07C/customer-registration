@@ -6,11 +6,11 @@ interface MapPreviewProps {
     longitude: number;
 }
 
+
 const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
-    const apiKey = process.env.MAP_API;
-    const mapUrl = apiKey
-        ? `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${latitude},${longitude}&zoom=15`
-        : null;
+    const apiKey = process.env.MAP_API ?? 'AIzaSyBKr0IAuR83tMcwL76B2Zw9yslPJYs0q9U';
+    const mapUrl =  `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${latitude},${longitude}&zoom=15`
+        ;
     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
     return (
@@ -43,7 +43,7 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
             </div>
 
             {/* Google Maps embed or placeholder */}
-            {mapUrl ? (
+            
                 <iframe
                     src={mapUrl}
                     width="100%"
@@ -54,16 +54,7 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
                     referrerPolicy="no-referrer-when-downgrade"
                     className="rounded-lg"
                 />
-            ) : (
-                <div className="w-full h-64 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                    <div className="text-center text-gray-600">
-                        <MapPin className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">Map Preview</p>
-                        <p className="text-xs">{latitude.toFixed(4)}, {longitude.toFixed(4)}</p>
-                        <p className="text-xs mt-2 text-gray-500">Add VITE_GOOGLE_MAPS_API_KEY to .env for live map</p>
-                    </div>
-                </div>
-            )}
+            
 
         
         </div>
