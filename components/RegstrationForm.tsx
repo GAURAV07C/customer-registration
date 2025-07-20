@@ -72,12 +72,6 @@ const RegistrationForm = () => {
 
             responses
             .then((response)=> {
-                
-            
-
-
-
-
             console.log("res",response)
             if (response.success) {
                 toast.success('Registration successful!', {
