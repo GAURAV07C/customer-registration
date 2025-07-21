@@ -1,10 +1,16 @@
 "use client"
 import React, { useState, useEffect, useTransition } from 'react';
+// Importing icons for UI
 import { User, Mail, Phone, MapPin, Lock, Eye, EyeOff, Calendar, Home, Check, Loader2, UserCheck } from 'lucide-react';
+// React Hook Form for form state management
 import { useForm } from 'react-hook-form';
+// Zod resolver for schema validation
 import { zodResolver } from '@hookform/resolvers/zod';
+// Toast notifications
 import { toast } from 'sonner';
+// Import validation schema and types
 import { registrationSchema, type RegistrationFormData } from '@/validation/uservalidation'
+// UI components
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,22 +20,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import PasswordStrengthMeter from '@/components/PasswordStrengthMeter';
+// Actions for registration and customer lookup
 import { submitRegistration, getCustomerByPhone } from '@/actions/userRegistaonAction';
 
 const RegistrationForm = () => {
+    // State for password visibility toggles
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    // State for location fetching
     const [isGettingLocation, setIsGettingLocation] = useState(false);
+    // State for form submission
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // State for phone checking
     const [isCheckingPhone, setIsCheckingPhone] = useState(false);
+    // State for existing customer data
     const [existingCustomer, setExistingCustomer] = useState<any>(null);
+    // State for confirmation dialog
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    // State for phone status
     const [phoneStatus, setPhoneStatus] = useState<'idle' | 'checking' | 'found' | 'new'>('idle');
 
-
-
-
-
+    // Initialize form with default values and validation
     const form = useForm<RegistrationFormData>({
         resolver: zodResolver(registrationSchema),
         defaultValues: {
@@ -47,6 +58,9 @@ const RegistrationForm = () => {
         mode: 'onBlur'
     });
 
+    // Watchers for form fields
+    // why use watchers
+    // to track changes in specific fields without re-rendering the entire form
 
     const watchedPhone = form.watch('phone_number');
     const watchedPassword = form.watch('password');
@@ -54,20 +68,18 @@ const RegistrationForm = () => {
     const watchedLatitude = form.watch('latitude');
     const watchedLongitude = form.watch('longitude');
 
-
+    // Transition for async actions
     const [isPending, startTransition] = useTransition();
 
+    // Handles form submission
     const onSubmit = (data: RegistrationFormData) => {
         setIsSubmitting(true);
         try {
             console.log(data, "data")
             startTransition(() => {
-
                 setIsCheckingPhone(true);
                 setPhoneStatus('checking')
-
-
-
+                // Call registration action
                 const responses = submitRegistration(data);
 
                 responses
@@ -78,9 +90,7 @@ const RegistrationForm = () => {
                                 description: 'Customer has been registered successfully.'
                             });
                         }
-
-                        // Reset form
-
+                        // Reset form and states
                         form.reset();
                         setPhoneStatus('idle');
                         setExistingCustomer(null);
@@ -91,22 +101,20 @@ const RegistrationForm = () => {
                             description: error instanceof Error ? error.message : 'An unexpected error'
                         })
                     })
-
             })
-
         } catch (error) {
             if (error instanceof Error) {
                 toast.error('Registration failed', {
                     description: error.message
                 })
             }
-
             console.error('Registration error : ,', error)
         } finally {
             setIsSubmitting(false);
         }
     }
 
+    // Gets current location using browser geolocation
     const getLocation = () => {
         setIsGettingLocation(true);
 
@@ -120,6 +128,8 @@ const RegistrationForm = () => {
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
+            // set latitude and longitude in form
+            
                 form.setValue('latitude', position.coords.latitude.toFixed(6));
                 form.setValue('longitude', position.coords.longitude.toFixed(6));
                 setIsGettingLocation(false);
@@ -150,16 +160,14 @@ const RegistrationForm = () => {
                 maximumAge: 60000
             }
         );
-
     }
 
-
+    // Checks if phone number exists in database
     useEffect(() => {
         const checkPhone = async () => {
             if (watchedPhone && watchedPhone.length === 10) {
                 setIsCheckingPhone(true);
                 setPhoneStatus('checking');
-
                 try {
                     const response = await getCustomerByPhone(watchedPhone);
                     console.log("response", response)
@@ -190,12 +198,9 @@ const RegistrationForm = () => {
         checkPhone();
     }, [watchedPhone]);
 
-
-    
+    // Checks email (duplicate logic for demonstration, can be refactored)
     useEffect(() => {
-        
         const checkEmail = async () => {
-            
             if (watchedPhone && watchedPhone.length === 10) {
                 setIsCheckingPhone(true);       // Show loading spinner or indicator
                 setPhoneStatus('checking');     // Set status to 'checking'
@@ -239,9 +244,7 @@ const RegistrationForm = () => {
         checkEmail();
     }, [watchedPhone]);  // Re-run whenever watchedPhone changes
 
-
-
-
+    // Handles auto-filling the form with existing customer data
     const handleAutoFill = () => {
         if (existingCustomer) {
             form.reset({
@@ -255,7 +258,6 @@ const RegistrationForm = () => {
                 longitude: existingCustomer.longitude,
                 password: '',
                 confirmPassword: ''
-
             })
             setShowConfirmDialog(false);
             toast.success('Form auto-filled successfully!', {
@@ -264,12 +266,12 @@ const RegistrationForm = () => {
         }
     }
 
-
-
+    // Main form UI
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-4 sm:py-8 px-4" >
             <div className="max-w-7xl mx-auto">
 
+                {/* Page header */}
                 <div className="text-center mb-6 sm:mb-8">
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                         Customer Registration
@@ -290,7 +292,9 @@ const RegistrationForm = () => {
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
 
+                                    {/* Left Column */}
                                     <div className="space-y-6">
+                                        {/* Name Field */}
                                         <FormField
                                             control={form.control}
                                             name="name"
@@ -312,7 +316,7 @@ const RegistrationForm = () => {
                                             )}
                                         />
 
-                                        {/* Email */}
+                                        {/* Email Field */}
                                         <FormField
                                             control={form.control}
                                             name="email"
@@ -335,7 +339,7 @@ const RegistrationForm = () => {
                                             )}
                                         />
 
-                                        {/* Phone */}
+                                        {/* Phone Field */}
                                         <FormField
                                             control={form.control}
                                             name="phone_number"
@@ -386,7 +390,7 @@ const RegistrationForm = () => {
                                             )}
                                         />
 
-                                        {/* Gender */}
+                                        {/* Gender Field */}
                                         <FormField
                                             control={form.control}
                                             name="gender"
@@ -410,7 +414,7 @@ const RegistrationForm = () => {
                                             )}
                                         />
 
-                                        {/* Date of Birth */}
+                                        {/* Date of Birth Field */}
                                         <FormField
                                             control={form.control}
                                             name="dob"
@@ -435,7 +439,7 @@ const RegistrationForm = () => {
 
                                     {/* Right Column */}
                                     <div className="space-y-6">
-                                        {/* Address */}
+                                        {/* Address Field */}
                                         <FormField
                                             control={form.control}
                                             name="address"
@@ -463,7 +467,7 @@ const RegistrationForm = () => {
                                                 </FormItem>
                                             )}
                                         />
-                                        {/* Password */}
+                                        {/* Password Field */}
                                         <FormField
                                             control={form.control}
                                             name="password"
@@ -492,13 +496,14 @@ const RegistrationForm = () => {
                                                             </Button>
                                                         </div>
                                                     </FormControl>
+                                                    {/* Password strength meter */}
                                                     {watchedPassword && <PasswordStrengthMeter password={watchedPassword} />}
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
 
-                                        {/* Confirm Password */}
+                                        {/* Confirm Password Field */}
                                         <FormField
                                             control={form.control}
                                             name="confirmPassword"
@@ -532,9 +537,8 @@ const RegistrationForm = () => {
                                             )}
                                         />
 
-                                        {/* Location */}
+                                        {/* Location Fields */}
                                         <div className="space-y-4">
-
                                             <FormLabel className="flex items-center text-sm font-medium text-gray-700">
                                                 <MapPin className="w-4 h-4 mr-2" />
                                                 GPS Coordinates
@@ -589,8 +593,6 @@ const RegistrationForm = () => {
                                                 {isGettingLocation ? 'Getting Location...' : 'Get Current Location'}
                                             </Button>
                                         </div>
-
-
                                     </div>
                                 </div>
 
@@ -604,13 +606,11 @@ const RegistrationForm = () => {
                                     </div>
                                 )}
 
-
                                 {/* Submit Button */}
                                 <div className="pt-6 border-t border-gray-200">
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}
-
                                         size="lg"
                                         className="w-full h-12 text-lg font-semibold"
                                     >
@@ -624,15 +624,9 @@ const RegistrationForm = () => {
                                         )}
                                     </Button>
                                 </div>
-
-
-
                             </form>
                         </Form>
-
-
                     </div>
-
                 </div>
                 {/* Auto-fill confirmation dialog */}
                 <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -663,14 +657,8 @@ const RegistrationForm = () => {
                     </AlertDialogContent>
                 </AlertDialog>
             </div>
-
-
-
         </div>
-
-
     )
-
 }
 
 export default RegistrationForm;
