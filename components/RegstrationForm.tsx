@@ -162,7 +162,7 @@ const RegistrationForm = () => {
 
                 try {
                     const response = await getCustomerByPhone(watchedPhone);
-                    console.log("response",response)
+                    console.log("response", response)
                     if (response.success && response.data) {
                         setExistingCustomer(response.data);
                         setPhoneStatus('found');
@@ -187,9 +187,57 @@ const RegistrationForm = () => {
             }
         };
 
-        checkPhone(); 
+        checkPhone();
     }, [watchedPhone]);
 
+
+    
+    useEffect(() => {
+        
+        const checkEmail = async () => {
+            
+            if (watchedPhone && watchedPhone.length === 10) {
+                setIsCheckingPhone(true);       // Show loading spinner or indicator
+                setPhoneStatus('checking');     // Set status to 'checking'
+
+                try {
+                    // Call backend to check if customer with this phone exists
+                    const response = await getCustomerByPhone(watchedPhone);
+
+                    if (response.success && response.data) {
+                        // Customer found in database
+                        setExistingCustomer(response.data);     // Store existing customer info
+                        setPhoneStatus('found');                // Update status to 'found'
+                        setShowConfirmDialog(true);             // Trigger confirm dialog
+
+                        // Show toast to notify user
+                        toast.info(`Customer found: ${response.data.name}`, {
+                            description: 'Would you like to auto-fill the form with existing details?'
+                        });
+                    } else {
+                        // No customer found — mark as new entry
+                        setPhoneStatus('new');
+                        setExistingCustomer(null);
+                    }
+                } catch (error) {
+                    // Handle API or network failure
+                    console.error('Phone check error:', error);
+                    setPhoneStatus('idle');
+                    toast.error('Failed to check phone number');
+                } finally {
+                    setIsCheckingPhone(false);    // Hide loading spinner
+                }
+
+            } else {
+                // If phone is not 10 digits yet — reset status and clear any stored customer
+                setPhoneStatus('idle');
+                setExistingCustomer(null);
+            }
+        };
+
+        // Call the phone check function without debounce
+        checkEmail();
+    }, [watchedPhone]);  // Re-run whenever watchedPhone changes
 
 
 
@@ -201,7 +249,7 @@ const RegistrationForm = () => {
                 email: existingCustomer.email,
                 phone_number: existingCustomer.phone_number,
                 dob: existingCustomer.dob,
-                gender : existingCustomer.gender,
+                gender: existingCustomer.gender,
                 address: existingCustomer.address,
                 latitude: existingCustomer.latitude,
                 longitude: existingCustomer.longitude,

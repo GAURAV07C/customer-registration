@@ -1,4 +1,12 @@
 'use server';
+
+/**
+ * User Registration Action
+ * Handles user registration, email and phone number checks, and customers retrieval.
+ * Validates input data using Zod schema and interacts with Prisma ORM for database operations.
+ * @file actions/userRegistrationAction.ts
+ */
+
 import prisma from "@/lib/prisma"
 
 import { RegistrationFormData, registrationSchema } from "@/validation/uservalidation";
@@ -6,8 +14,20 @@ import { RegistrationFormData, registrationSchema } from "@/validation/uservalid
 import { z } from "zod"
 
 
+
+/**
+ * Submits user regstration data.
+ * Validates the data, checks for existing email and phone number, and creates a new user in the database.
+ * @param formData - The registration form data to be submitted.
+ * @returns An object indicating success or failure, with appropriate error message and validation errors if any.
+ * @throws {Error} If an unexpected error occurs during the process.
+ */
+
 export const submitRegistration = async (formData: RegistrationFormData) => {
     try {
+        // Validate the form data using Zod schema
+        // This will throw an error if validation fails
+        
         const validatedData = registrationSchema.parse(formData);
 
         const { name, email, password, phone_number, gender, dob, latitude, longitude, address } = validatedData
@@ -26,7 +46,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
 
         // Check if phone already exists
         const existingPhone = await prisma.user.findFirst({
-            where: { phone_number: phone_number}
+            where: { phone_number: phone_number }
         });
         if (existingPhone) {
             return {
@@ -45,7 +65,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
                 gender: gender,
                 dob: dob,
                 address: address,
-                password: password, 
+                password: password,
                 latitude: latitude ?? "",
                 longitude: longitude ?? "",
             }
@@ -70,7 +90,7 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
                 errors: fieldErrors
             };
         }
-        console.error('error in ',error)
+        console.error('error in ', error)
 
         return {
             success: false,
@@ -79,13 +99,59 @@ export const submitRegistration = async (formData: RegistrationFormData) => {
     }
 };
 
-
-export const checkEmailAvailability = async (email: string) => {
+/**
+ *  Retrived customer by phone number.
+ * Searches for a user by their phone number in the database.
+ * @param phone - The phone number to search for in the database.
+ * @returns An object indicating success or failure, with user data if found or an error message if not found or an error occurs.
+ * @throws {Error} If an unexpected errors occurs during the process.
+ */
+export const getCustomerByPhone = async (phone: string) => {
     try {
-        const existing = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findFirst({
+            where: { phone_number: phone }
+        });
+        if (!user) {
+            return { success: true, data: null };
+        }
+
         return {
             success: true,
-            data: { available: !existing }
+            data: {
+                ...user,
+                password: '',
+                confirmPassword: ''
+            }
+        };
+    } catch {
+        return {
+            success: false,
+            error: 'Server error'
+        };
+    }
+}
+
+
+/**
+ * Retrieved customer by email.
+ * Searches for a user by their email in the database.
+ * @param email - The email to search for in the database.
+ */
+
+export const getCustomerByEmail = async (email: string) => {
+    try {
+        const customer = await prisma.user.findUnique({ where: { email } });
+        if (!customer) {
+            return { success: true, data: null };
+        }
+
+        return {
+            success: true,
+            data: {
+                ...customer,
+                password: '',
+                confirmPassword: ''
+            }
         };
     } catch {
         return {
@@ -94,30 +160,4 @@ export const checkEmailAvailability = async (email: string) => {
         };
     }
 };
-
-export const getCustomerByPhone = async (phone: string) => {
-    try {
-            const user = await prisma.user.findFirst({
-                where: { phone_number: phone } 
-            });
-            if(!user) {
-                return { success: true, data: null };
-            }
-    
-            return {
-                success: true,
-                data: {
-                    ...user,
-                    password: '',
-                    confirmPassword: ''
-                }
-            };
-        } catch {
-            return {
-                success: false,
-                error: 'Server error'
-            };
-        }
-    }
-
 

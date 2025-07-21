@@ -1,4 +1,9 @@
-import React from 'react';
+
+/**
+ * MapPreview.tsx
+ * A React component to display a map preview with latitude and longitude information.
+ * It uses Google Maps Embed API to show the map and provides a link to open it in Google Maps.
+ */
 import { MapPin, ExternalLink } from 'lucide-react';
 
 interface MapPreviewProps {
@@ -42,7 +47,13 @@ const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
                 </div>
             </div>
 
-            {/* Google Maps embed or placeholder */}
+            {/* Google Maps embed or placeholder 
+            why use iframe instead of a static image?
+
+            The iframe allows for an interactive map experience, enabling users to zoom, pan, and explore the area directly within the application.
+             A static image would not provide this level of interactivity and would require users to open a seperate link to view the map in detail.
+             
+            */}
             
                 <iframe
                     src={mapUrl}
