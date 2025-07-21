@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 Customer Registration Form (Sales Executive Use)
 
-## Getting Started
+A responsive form built for sales executives to register customers during field visits. The form captures customer details and real-time location using the browser's geolocation API.
 
-First, run the development server:
+---
+## 🔗 Live Demo
+
+[Click here to view the app](https://customer-registration-mocha.vercel.app/)
+
+---
+
+## 🚀 Features
+
+- ✅ Form validation with Zod and React Hook Form
+- 📍 Auto-detect location using browser geolocation
+- 🔒 Password strength meter and match validation
+- 📞 Auto-fill form if customer phone exists
+- 📧 Email availability check
+- 📊 Live character counter for address field
+- 🌍 (Optional) Google Maps preview
+
+---
+
+## 📦 Tech Stack
+
+| Layer     | Tools                            |
+|-----------|----------------------------------|
+| Frontend  | React, TypeScript, Tailwind CSS |
+| Form      | React Hook Form + Zod           |
+| Backend   | Next.js App Router, Prisma ORM  |
+| Database  | PostgreSQL / MySQL              |
+
+---
+
+## 🛠 Setup Instructions
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+https://github.com/GAURAV07C/customer-registration
+cd customer-registration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. install Dependencies
+```
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+### 3. Configure Environment Variables
+#### Create a .env file in the root:
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/your_database"
+```
+#### Replace with your actual database credentials and DB name.
+## Prisma Setup
+ ### 4. Initialize and Migrate Database
+ ```
+npm run db:migrate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
 
-## Learn More
+ ### 5. Preview Prisma Studio (optional)
 
-To learn more about Next.js, take a look at the following resources:
+ ```
+npm run  db:studio
+```
+##  Run the App
+### 6. Start the Development Server
+```
+npm run dev
+```
+#### Open http://localhost:3000 in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ ## Form Fields & Validations
+ 
+  Field     | Validation                            |
+|-----------|----------------------------------|
+|  Full Name | Required, letters + space only |
+|     Email	| Required, valid format, unique check    |
+|      Phone Number |	Required, 10 digits, unique check |
+|       Gender	Required (Male/Female/Other)    |
+|    Date of Birth |	Required, must be 13+ years old |
+| Address |	Required, min 10 characters|
+|Password |	Required, min 6 characters|
+|Confirm Password	 | Must match password|
+|Latitude |	Auto-filled via browser GPS|
+||Longitude	| Auto-filled via browser GPS|
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+customer-registration/
+├── actions/
+│   └── userRegistaonAction.ts
+├── app/
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── MapPreview.tsx
+│   ├── PasswordStrengthMeter.tsx
+│   ├── RegistrationForm.tsx
+│   └── ui/
+│       ├── alert-dialog.tsx
+│       ├── button.tsx
+│       ├── form.tsx
+│       ├── input.tsx
+│       ├── label.tsx
+│       ├── select.tsx
+│       ├── sonner.tsx
+│       └── textarea.tsx
+├── lib/
+│   ├── prisma.ts
+│   └── utils.ts
+├── prisma/
+│   ├── migrations/
+│   │   ├── 20250719175246_init_db/
+│   │   │   └── migration.sql
+│   │   └── 20250720123306_init/
+│   │       └── migration.sql
+│   ├── migration_lock.toml
+│   └── schema.prisma
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── validation/
+│   └── uservalidation.ts
+├── .env
+├── .gitignore
+├── components.json
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── tsconfig.json
+└── README.md
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+
+- ✅ Evaluation Criteria (Assignment)
+- ✅ Input Validations (20%)
+- ✅ Location Capture (20%)
+- ✅ UI/UX and Structure (20%)
+- ✅ Code Quality & Comments (20%)
+- ✅ Bonus Features (20%)
+  
+---
+
+
+
