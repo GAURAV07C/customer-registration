@@ -54,6 +54,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/your_database"
 #### Replace with your actual database credentials and DB name.
 ## Prisma Setup
  ### 4. Initialize and Migrate Database
+<<<<<<< HEAD
   ```
   npm run db:migrate
 
@@ -153,3 +154,104 @@ DATABASE_URL="postgresql://user:password@localhost:5432/your_database"
 
 
           
+=======
+ ```
+npm run db:migrate
+
+```
+
+ ### 5. Preview Prisma Studio (optional)
+
+ ```
+npm run  db:studio
+```
+##  Run the App
+### 6. Start the Development Server
+```
+npm run dev
+```
+#### Open http://localhost:3000 in your browser.
+
+
+ ## Form Fields & Validations
+ 
+  Field     | Validation                            |
+|-----------|----------------------------------|
+|  Full Name | Required, letters + space only |
+|     Email	| Required, valid format, unique check    |
+|      Phone Number |	Required, 10 digits, unique check |
+|       Gender	Required (Male/Female/Other)    |
+|    Date of Birth |	Required, must be 13+ years old |
+| Address |	Required, min 10 characters|
+|Password |	Required, min 6 characters|
+|Confirm Password	 | Must match password|
+|Latitude |	Auto-filled via browser GPS|
+||Longitude	| Auto-filled via browser GPS|
+
+#### Folder Structure
+```
+customer-registration/
+├── actions/
+│   └── userRegistaonAction.ts
+├── app/
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── MapPreview.tsx
+│   ├── PasswordStrengthMeter.tsx
+│   ├── RegistrationForm.tsx
+│   └── ui/
+│       ├── alert-dialog.tsx
+│       ├── button.tsx
+│       ├── form.tsx
+│       ├── input.tsx
+│       ├── label.tsx
+│       ├── select.tsx
+│       ├── sonner.tsx
+│       └── textarea.tsx
+├── lib/
+│   ├── prisma.ts
+│   └── utils.ts
+├── prisma/
+│   ├── migrations/
+│   │   ├── 20250719175246_init_db/
+│   │   │   └── migration.sql
+│   │   └── 20250720123306_init/
+│   │       └── migration.sql
+│   ├── migration_lock.toml
+│   └── schema.prisma
+├── public/
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├── validation/
+│   └── uservalidation.ts
+├── .env
+├── .gitignore
+├── components.json
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── tsconfig.json
+└── README.md
+
+```
+
+- ✅ Evaluation Criteria (Assignment)
+- ✅ Input Validations (20%)
+- ✅ Location Capture (20%)
+- ✅ UI/UX and Structure (20%)
+- ✅ Code Quality & Comments (20%)
+- ✅ Bonus Features (20%)
+  
+---
+
+
+
+>>>>>>> 05a9ada07eb769df2104d7f231cbc2fa9ea04f1a
