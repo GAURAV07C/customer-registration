@@ -13,7 +13,7 @@ interface MapPreviewProps {
 
 
 const MapPreview: React.FC<MapPreviewProps> = ({ latitude, longitude }) => {
-    const apiKey = process.env.MAP_API ?? 'AIzaSyBKr0IAuR83tMcwL76B2Zw9yslPJYs0q9U';
+    const apiKey = process.env.MAP_API ;
     const mapUrl =  `https://www.google.com/maps/embed/v1/view?key=${apiKey}&center=${latitude},${longitude}&zoom=15`
         ;
     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
