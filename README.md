@@ -87,7 +87,7 @@ npm run dev
 |Latitude |	Auto-filled via browser GPS|
 ||Longitude	| Auto-filled via browser GPS|
 
-
+#### Folder Structure
 ```
 customer-registration/
 ├── actions/
